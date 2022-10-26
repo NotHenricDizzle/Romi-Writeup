@@ -45,16 +45,23 @@ public class AutoCommand extends CommandBase {
       if (drivetrain.getLeftDistanceInch() >= currentStep
           || drivetrain.getRightDistanceInch() >= currentStep)
       {
-            step++;
+            incrementStep();
       }
     }
     else {
       if (gyro.getAngleZ() >= currentStep)
       {
-        step++;
+        incrementStep();
       }
     }
 
+  }
+
+  private void incrementStep()
+  {
+    step++;
+    drivetrain.resetEncoders();
+    gyro.reset();
   }
 
   private void setMovement() {
