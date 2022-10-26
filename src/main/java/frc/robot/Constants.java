@@ -17,4 +17,8 @@ public final class Constants {
     public static final class AUTO_CONSTANTS {
         public static final int example_int = 0;
     }
+
+    public static final double[] STEPS = {
+        5.0, 90.0, 5.0, 90.0, 5.0, 90.0
+    };
 }
