@@ -46,13 +46,22 @@ public class AutoCommand extends CommandBase {
           || drivetrain.getRightDistanceInch() >= currentStep)
       {
             step++;
+            drivetrain.resetEncoders();
+            gyro.reset();
       }
     }
     else {
       if (gyro.getAngleZ() >= currentStep)
       {
         step++;
+        drivetrain.resetEncoders();
+        gyro.reset();
       }
+    }
+
+    if (step >= Constants.STEPS.length)
+    {
+      this.cancel();
     }
 
   }
