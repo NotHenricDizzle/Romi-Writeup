@@ -39,23 +39,25 @@ public class AutoCommand extends CommandBase {
   public void execute() {
     // this is where most of your logic will be.
     double currentStep = Constants.STEPS[step];
-    setMovement();
 
     if (step % 2 == 0) {
-      if (drivetrain.getLeftDistanceInch() >= currentStep
-          || drivetrain.getRightDistanceInch() >= currentStep)
+      if (drivetrain.getLeftDistanceInch() < currentStep)
       {
-            step++;
-            drivetrain.resetEncoders();
-            gyro.reset();
+        drivetrain.arcadeDrive(1.0, 0.0);
+      }
+      else 
+      {
+        nextStep();
       }
     }
     else {
-      if (gyro.getAngleZ() >= currentStep)
+      if (gyro.getAngleZ() < currentStep)
       {
-        step++;
-        drivetrain.resetEncoders();
-        gyro.reset();
+        drivetrain.arcadeDrive(0.0, 0.5);
+      }
+      else 
+      {
+        nextStep();
       }
     }
 
@@ -66,15 +68,13 @@ public class AutoCommand extends CommandBase {
 
   }
 
-  private void setMovement() {
-    if (step % 2 == 0)
-    {
-      drivetrain.arcadeDrive(1.0, 0.0);
-    }
-    else {
-      drivetrain.arcadeDrive(0.0, 1.0);
-    }
+  private void nextStep()
+  {
+    step++;
+    drivetrain.resetEncoders();
+    gyro.reset();
   }
+
 
   // Called once the command ends or is interrupted.
   @Override
