@@ -7,7 +7,13 @@ package frc.robot.commands;
 import frc.robot.Constants;
 import frc.robot.sensors.RomiGyro;
 import frc.robot.subsystems.RomiDrivetrain;
+
+import javax.tools.Diagnostic;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
+
+import frc.robot.Step;
+import frc.robot.StepType;
 
 /** An example command that uses an example subsystem. */
 public class AutoCommand extends CommandBase {
@@ -38,34 +44,74 @@ public class AutoCommand extends CommandBase {
   @Override
   public void execute() {
     // this is where most of your logic will be.
-    double currentStep = Constants.STEPS[step];
+      Step currentStep = Constants.STEPS[step];
 
-    if (step % 2 == 0) {
-      if (drivetrain.getLeftDistanceInch() < currentStep)
-      {
-        drivetrain.arcadeDrive(1.0, 0.0);
+      boolean stepComplete;
+
+      switch(currentStep.type) {
+        case MOVE:
+          stepComplete = moveDistance(currentStep.value);
+          break;
+        case TURN:
+          stepComplete = turnAngle(currentStep.value);
+          break;
+        default:
+          System.out.println("WARNING: UNRECONGIZED TURN TYPE");
+          stepComplete = true;
+          break;
       }
-      else 
-      {
+
+      if (stepComplete) {
         nextStep();
       }
-    }
-    else {
-      if (gyro.getAngleZ() < currentStep)
+
+      if (step >= Constants.STEPS.length)
       {
-        drivetrain.arcadeDrive(0.0, 0.5);
+        auto_finished = true;
       }
-      else 
-      {
-        nextStep();
+  }
+
+  // Returns true if the step is completed
+  private boolean moveDistance(double distance) {
+    double driftCorrection = -0.1;
+
+    boolean moveForward = distance > 0;
+    distance = Math.abs(distance);
+
+    // TODO: format this bool better?
+    boolean exceededDistance = 
+      Math.abs(drivetrain.getLeftDistanceInch()) >= distance
+      || Math.abs(drivetrain.getRightDistanceInch()) >= distance;
+
+    if (!exceededDistance) {
+      if (moveForward) {
+        drivetrain.arcadeDrive(1.0, driftCorrection * gyro.getAngleZ());
+      }
+      else {
+        drivetrain.arcadeDrive(-1.0, driftCorrection * gyro.getAngleZ());
       }
     }
 
-    if (step >= Constants.STEPS.length)
-    {
-      this.cancel();
+    return exceededDistance;
+  }
+
+  private boolean turnAngle(double angle) {
+    boolean turnRight = angle > 0;
+
+    angle = Math.abs(angle);
+
+    boolean exceededAngle = Math.abs(gyro.getAngleZ()) > angle;
+
+    if (!exceededAngle) {
+      if (turnRight) {
+        drivetrain.arcadeDrive(0.0, 1.0);
+      }
+      else {
+        drivetrain.arcadeDrive(0.0, -1.0);
+      }
     }
 
+    return exceededAngle;
   }
 
   private void nextStep()
@@ -74,7 +120,6 @@ public class AutoCommand extends CommandBase {
     drivetrain.resetEncoders();
     gyro.reset();
   }
-
 
   // Called once the command ends or is interrupted.
   @Override

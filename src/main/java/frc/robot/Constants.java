@@ -19,7 +19,7 @@ public final class Constants {
     }
 
     // 245 in. + 84 in.
-    public static final double[] STEPS = {
-        50.0, 45.0, 50.0, 45.0, 50.0, 45.0
+    public static final Step[] STEPS = {
+        new Step(StepType.MOVE, Double.MAX_VALUE),
     };
 }
