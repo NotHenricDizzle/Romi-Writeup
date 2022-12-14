@@ -17,6 +17,7 @@ import frc.robot.StepType;
 
 /** An example command that uses an example subsystem. */
 public class AutoCommand extends CommandBase {
+
   private final RomiDrivetrain drivetrain;
   private final RomiGyro gyro;
 
@@ -73,8 +74,6 @@ public class AutoCommand extends CommandBase {
 
   // Returns true if the step is completed
   private boolean moveDistance(double distance) {
-    double driftCorrection = -0.1;
-
     boolean moveForward = distance > 0;
     distance = Math.abs(distance);
 
@@ -85,14 +84,26 @@ public class AutoCommand extends CommandBase {
 
     if (!exceededDistance) {
       if (moveForward) {
-        drivetrain.arcadeDrive(1.0, driftCorrection * gyro.getAngleZ());
+        drivetrain.arcadeDrive(1.0, 0.0);
       }
       else {
-        drivetrain.arcadeDrive(-1.0, driftCorrection * gyro.getAngleZ());
+        drivetrain.arcadeDrive(-1.0, 0.0);
       }
+      System.out.println(gyro.getAngleZ());
+      angleCorrection();
     }
 
     return exceededDistance;
+  }
+
+  private void angleCorrection()
+  {
+    if (gyro.getAngleZ() > 0) {
+      drivetrain.arcadeDrive(1.0, (gyro.getAngleZ() / -360) * 5);
+    }
+    else {
+      drivetrain.arcadeDrive(1.0, (gyro.getAngleZ() / 360) * 5);
+    }
   }
 
   private boolean turnAngle(double angle) {

@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.AutoCommand;
+import frc.robot.commands.TeleopCommand;
 import frc.robot.sensors.RomiGyro;
 import frc.robot.subsystems.RomiDrivetrain;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -21,6 +22,7 @@ public class RobotContainer {
   private final RomiDrivetrain m_romiDrivetrain = new RomiDrivetrain();
   private final RomiGyro m_romiGyro = new RomiGyro();
   private final AutoCommand m_autoCommand = new AutoCommand(m_romiDrivetrain, m_romiGyro);
+  private final TeleopCommand m_teleopCommand = new TeleopCommand(m_romiDrivetrain);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -44,5 +46,9 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // Your command will run when autonomous is activated.
     return m_autoCommand;
+  }
+
+  public Command getTeleopCommand() {
+    return m_teleopCommand;
   }
 }
